@@ -1,23 +1,26 @@
+use std::net::TcpStream;
 use std::process::{Command, Child};
 use std::sync::Mutex;
 use tauri::{Manager, RunEvent};
 
 struct PythonBackend(Mutex<Option<Child>>);
 
+fn port_is_listening(port: u16) -> bool {
+    TcpStream::connect(format!("127.0.0.1:{}", port)).is_ok()
+}
+
 fn start_python_backend() -> Option<Child> {
-    // Resolve server.py relative to the .app bundle's MacOS binary
-    // .app/Contents/MacOS/docuvault -> up 3 dirs -> bundle root -> up -> target/release/bundle
-    // For dev: find the repo root relative to the executable
+    // If something is already on 8200, reuse it (e.g. dev server or previous launch)
+    if port_is_listening(8200) {
+        return None;
+    }
+
     let exe = std::env::current_exe().ok()?;
 
-    // Walk up from the binary to find desktop/src-python/server.py
-    // Works both for direct cargo run and inside .app bundle
     let candidates = [
-        // Inside .app bundle: .app/Contents/MacOS -> up 4 -> repo root
+        exe.ancestors().nth(5).map(|p| p.join("desktop/src-python/server.py")),
         exe.ancestors().nth(4).map(|p| p.join("desktop/src-python/server.py")),
-        // Direct cargo run from frontend/src-tauri: up 3 -> repo root
         exe.ancestors().nth(3).map(|p| p.join("desktop/src-python/server.py")),
-        // Absolute fallback for dev
         Some(std::path::PathBuf::from(
             std::env::var("HOME").unwrap_or_default() + "/Dev/docuvault/desktop/src-python/server.py"
         )),
@@ -27,11 +30,18 @@ fn start_python_backend() -> Option<Child> {
 
     let child = Command::new("python3")
         .arg(&server_path)
+        .arg("8200")
         .spawn()
         .ok()?;
 
-    // Wait for server to start
-    std::thread::sleep(std::time::Duration::from_secs(2));
+    // Poll until the server is ready (up to 15 seconds)
+    for _ in 0..30 {
+        std::thread::sleep(std::time::Duration::from_millis(500));
+        if port_is_listening(8200) {
+            break;
+        }
+    }
+
     Some(child)
 }
 

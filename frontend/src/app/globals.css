@@ -94,6 +94,33 @@
   --dur-base: 160ms;
   --dur-slow: 280ms;
 
+  /* Design system semantic aliases (match reference JSX) */
+  --fg-primary:    var(--ink-10);
+  --fg-secondary:  var(--ink-9);
+  --fg-tertiary:   var(--ink-8);
+  --fg-muted:      var(--ink-7);
+  --bg-canvas:     var(--ink-0);
+  --bg-sidebar:    var(--ink-1);
+  --bg-card:       var(--ink-2);
+  --bg-hover:      var(--ink-3);
+  --bg-pressed:    var(--ink-4);
+  --bg-input:      var(--ink-2);
+  --border-default: var(--ink-4);
+  --border-faint:  var(--ink-3);
+  --success:       var(--dv-success);
+  --success-bg:    var(--dv-success-bg);
+  --warning:       var(--dv-warning);
+  --warning-bg:    var(--dv-warning-bg);
+  --danger:        var(--dv-danger);
+  --danger-bg:     var(--dv-danger-bg);
+  --info:          var(--dv-info);
+  --info-bg:       var(--dv-info-bg);
+  --radius-xs:     4px;
+  --radius-sm:     6px;
+  --radius-md:     8px;
+  --radius-lg:     10px;
+  --titlebar-h:    40px;
+
   /* Map to shadcn tokens */
   --background: var(--ink-0);
   --foreground: var(--ink-10);
@@ -226,6 +253,17 @@
 .dv-dots span:nth-child(1) { animation: dv-dot 1.2s 0ms infinite; }
 .dv-dots span:nth-child(2) { animation: dv-dot 1.2s 200ms infinite; }
 .dv-dots span:nth-child(3) { animation: dv-dot 1.2s 400ms infinite; }
+
+/* Indeterminate progress bar */
+@keyframes dv-progress { 0% { width: 0% } 60% { width: 80% } 100% { width: 95% } }
+.dv-progress { animation: dv-progress 1.4s var(--ease-out) forwards; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.dv-spin { animation: spin 0.8s linear infinite; }
+
+/* Titlebar drag region */
+.dv-titlebar { -webkit-app-region: drag; }
+.dv-titlebar button, .dv-titlebar a { -webkit-app-region: no-drag; }
 
 /* Cmd+K overlay */
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }

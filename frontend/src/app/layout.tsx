@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Sidebar } from "@/components/sidebar";
+import { TitleBar } from "@/components/titlebar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,14 +30,18 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
+      className={`${geistSans.variable} ${geistMono.variable} dark`}
+      style={{ height: "100%" }}
     >
-      <body className="min-h-full flex">
+      <body style={{ height: "100%", display: "flex", flexDirection: "column", background: "var(--bg-canvas)", color: "var(--fg-primary)", WebkitFontSmoothing: "antialiased" }}>
         <Providers>
-          <Sidebar />
-          <main className="flex-1 overflow-auto">
-            <div className="mx-auto p-6">{children}</div>
-          </main>
+          <TitleBar />
+          <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
+            <Sidebar />
+            <main style={{ flex: 1, overflow: "hidden", display: "flex", flexDirection: "column", background: "var(--bg-canvas)" }}>
+              {children}
+            </main>
+          </div>
         </Providers>
       </body>
     </html>

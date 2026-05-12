@@ -136,12 +136,17 @@ export interface SmartFolder {
 
 export interface Activity {
   id: string;
-  action: string;
-  description: string;
-  document_id: string | null;
-  document_title: string | null;
-  metadata: Record<string, unknown> | null;
-  created_at: string;
+  type?: string;
+  action?: string;
+  description?: string;
+  title?: string;
+  category?: string;
+  document_id?: string | null;
+  document_title?: string | null;
+  file_path?: string | null;
+  metadata?: Record<string, unknown> | null;
+  created_at?: string;
+  timestamp?: string;
 }
 
 export interface Analytics {

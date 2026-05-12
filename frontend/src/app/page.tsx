@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import { categoryColor, formatBytes, formatDate } from "@/lib/utils";
 import { PageHeader, Card, CardHeader, Btn, FileTypeIcon, CategoryBadge } from "@/components/ds";
+import type { Activity } from "@/lib/api";
 import { Files, HardDrive, Tags, AlertCircle, AlertTriangle, Info, FolderPlus, MessageSquare } from "lucide-react";
 import Image from "next/image";
 
@@ -22,10 +23,18 @@ export default function DashboardPage() {
   const recentDocs = docsList?.documents || [];
   const totalDocs = stats?.total_documents || 0;
   const totalSize = stats?.total_size_bytes || 0;
-  const avgConf = analyticsData?.totals?.avg_confidence || 0;
-  const aiDocs = analyticsData?.totals?.documents || 0;
-  const insights = (activityData?.activities || []).slice(0,3).map(a=>({ severity:"info" as const, message:a.description, details:a.document_title||formatDate(a.created_at) }));
-  if(!insights.length) insights.push({severity:"info", message:"No recent activity.", details:"Scan a folder to get started."});
+  const avgConf = (analyticsData as any)?.totals?.avg_confidence || 0;
+  const aiDocs = (analyticsData as any)?.totals?.documents || 0;
+  // Build insights from: activity log (if any), else low-confidence docs, else pending review
+  const activities = activityData?.activities || [];
+  const insights: Array<{severity: "info"|"warning"|"danger"; message: string; details: string}> = [];
+  if (stats?.pending_review && stats.pending_review > 0) {
+    insights.push({ severity: "warning", message: `${stats.pending_review} document${stats.pending_review > 1 ? "s" : ""} need classification review`, details: "AI confidence below 50% — click to review" });
+  }
+  activities.slice(0, 2).forEach((a: Activity) => {
+    insights.push({ severity: "info", message: a.title || a.description || "Document indexed", details: a.file_path || (a.timestamp ? formatDate(a.timestamp) : "") });
+  });
+  if (!insights.length) insights.push({ severity: "info", message: "No recent activity.", details: "Scan a folder to get started." });
 
   return (
     <div style={{display:"flex",flexDirection:"column",height:"100%",overflow:"hidden"}}>

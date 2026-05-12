@@ -4,9 +4,20 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
-import { Scan, RefreshCw, X, Loader2 } from "lucide-react";
+import { Scan, RefreshCw, X, Loader2, FolderOpen } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader, Card, CardHeader, Btn } from "@/components/ds";
+
+async function pickFolder(): Promise<string | null> {
+  try {
+    const { open } = await import("@tauri-apps/plugin-dialog");
+    const selected = await open({ directory: true, multiple: false, title: "Select folder to scan" });
+    return typeof selected === "string" ? selected : null;
+  } catch {
+    // Not running in Tauri — fall through (web dev mode)
+    return null;
+  }
+}
 
 // ── ResultStat ─────────────────────────────────────────────────────
 
@@ -176,6 +187,16 @@ export default function SettingsPage() {
                   outline: "none",
                 }}
               />
+              <Btn
+                variant="secondary"
+                icon={<FolderOpen size={13} />}
+                onClick={async () => {
+                  const path = await pickFolder();
+                  if (path) setScanPath(path);
+                }}
+              >
+                Browse
+              </Btn>
               <Btn
                 variant="secondary"
                 disabled={!scanPath || preview.isPending}

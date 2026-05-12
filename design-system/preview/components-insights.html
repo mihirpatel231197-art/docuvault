@@ -1,0 +1,34 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="_base.css"><style>
+  body { padding: 22px 24px; gap: 10px; }
+  .insight { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border-radius: var(--radius-lg); border: 1px solid; }
+  .insight .iC { width: 28px; height: 28px; flex-shrink: 0; border-radius: var(--radius-md); display: grid; place-items: center; }
+  .insight .grow { flex: 1; }
+  .h { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+  .d { font-size: 12px; color: var(--fg-tertiary); }
+  .warn { background: var(--warning-bg); border-color: oklch(0.80 0.15 78 / 0.4); color: var(--warning); }
+  .danger { background: var(--danger-bg); border-color: oklch(0.68 0.20 25 / 0.4); color: var(--danger); }
+  .info { background: var(--info-bg); border-color: oklch(0.72 0.13 220 / 0.4); color: var(--info); }
+  .iC.warn { background: oklch(0.80 0.15 78 / 0.2); }
+  .iC.danger { background: oklch(0.68 0.20 25 / 0.2); }
+  .iC.info { background: oklch(0.72 0.13 220 / 0.2); }
+</style></head><body>
+  <div class="label">Insight cards — proactive alerts</div>
+  <div class="insight warn">
+    <div class="iC warn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+    </div>
+    <div class="grow">
+      <div class="h" style="color:var(--ink-11)">3 contracts expire in the next 30 days</div>
+      <div class="d">Lease renewal · Insurance policy · SaaS subscription</div>
+    </div>
+  </div>
+  <div class="insight info">
+    <div class="iC info">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+    </div>
+    <div class="grow">
+      <div class="h" style="color:var(--ink-11)">7 likely duplicates found</div>
+      <div class="d">Same hash across multiple folders — review to free 412 MiB.</div>
+    </div>
+  </div>
+</body></html>

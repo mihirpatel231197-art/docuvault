@@ -1,0 +1,36 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="_base.css"><style>
+  body { padding: 22px 24px; gap: 14px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .chip {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: var(--radius-md);
+    border: 1px solid; font-size: 12px;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 999px; flex-shrink: 0; }
+  .label-sm { font-weight: 500; }
+  .text-secondary { color: var(--fg-tertiary); font-family: var(--font-mono); font-size: 11px; }
+</style></head><body>
+  <div class="label">Semantic intent</div>
+  <div class="grid">
+    <div class="chip" style="background:var(--success-bg);border-color:oklch(0.72 0.16 152 / 0.4);color:var(--success)">
+      <div class="dot" style="background:var(--success)"></div>
+      <div class="label-sm">Success</div>
+      <div class="text-secondary" style="margin-left:auto;color:var(--success)">Indexed 1,847</div>
+    </div>
+    <div class="chip" style="background:var(--warning-bg);border-color:oklch(0.80 0.15 78 / 0.4);color:var(--warning)">
+      <div class="dot" style="background:var(--warning)"></div>
+      <div class="label-sm">Warning</div>
+      <div class="text-secondary" style="margin-left:auto;color:var(--warning)">3 expiring</div>
+    </div>
+    <div class="chip" style="background:var(--danger-bg);border-color:oklch(0.68 0.20 25 / 0.4);color:var(--danger)">
+      <div class="dot" style="background:var(--danger)"></div>
+      <div class="label-sm">Danger</div>
+      <div class="text-secondary" style="margin-left:auto;color:var(--danger)">5 failed</div>
+    </div>
+    <div class="chip" style="background:var(--info-bg);border-color:oklch(0.72 0.13 220 / 0.4);color:var(--info)">
+      <div class="dot" style="background:var(--info)"></div>
+      <div class="label-sm">Info</div>
+      <div class="text-secondary" style="margin-left:auto;color:var(--info)">Scan running</div>
+    </div>
+  </div>
+</body></html>

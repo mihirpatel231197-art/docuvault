@@ -1,0 +1,857 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8" />
+<title>DocuVault</title>
+<link rel="icon" href="assets/glyph-docuvault.svg" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  html, body, #root { height: 100%; margin: 0; }
+  body { background: #050505; font-family: ui-sans-serif, system-ui, -apple-system, "Inter", "Segoe UI", sans-serif; }
+  #window { width: 1280px; height: 820px; border-radius: 12px; overflow: hidden; box-shadow: 0 30px 90px -20px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.05); }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: #262626; border-radius: 999px; }
+  ::-webkit-scrollbar-thumb:hover { background: #333; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+  @keyframes blink { 0%, 80%, 100% { opacity: 0.25; } 40% { opacity: 1; } }
+  .typing-dots > span { display: inline-block; width: 4px; height: 4px; border-radius: 999px; background: #737373; margin-right: 3px; animation: blink 1.4s infinite both; }
+  .typing-dots > span:nth-child(2) { animation-delay: 0.16s; }
+  .typing-dots > span:nth-child(3) { animation-delay: 0.32s; }
+</style>
+</head>
+<body class="grid place-items-center p-8">
+<div id="window"><div id="root" class="h-full"></div></div>
+
+<script type="text/babel">
+const { useState, useEffect, useMemo, useRef } = React;
+
+/* ───────────────────────── Icon helper ───────────────────────── */
+function Icon({ name, size = 16, strokeWidth = 1.5, className = "" }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (ref.current && window.lucide) {
+      ref.current.innerHTML = "";
+      const i = document.createElement("i");
+      i.setAttribute("data-lucide", name);
+      i.setAttribute("stroke-width", strokeWidth);
+      ref.current.appendChild(i);
+      window.lucide.createIcons({ icons: window.lucide.icons, attrs: { width: size, height: size } });
+      const svg = ref.current.querySelector("svg");
+      if (svg) { svg.setAttribute("width", size); svg.setAttribute("height", size); }
+    }
+  }, [name, size, strokeWidth]);
+  return <span ref={ref} className={"inline-flex shrink-0 " + className} />;
+}
+
+/* ───────────────────────── Mock data ───────────────────────── */
+const CATEGORIES = [
+  { name: "Finance",   count: 42, color: "blue"   },
+  { name: "Legal",     count: 15, color: "purple" },
+  { name: "Career",    count: 23, color: "green"  },
+  { name: "Education", count: 31, color: "yellow" },
+  { name: "Medical",   count: 8,  color: "pink"   },
+  { name: "Personal",  count: 19, color: "orange" },
+];
+
+const CAT_STYLES = {
+  blue:   { dot: "bg-blue-400",   chip: "bg-blue-500/12 text-blue-300 border-blue-500/25",     bar: "bg-blue-500" },
+  purple: { dot: "bg-purple-400", chip: "bg-purple-500/12 text-purple-300 border-purple-500/25", bar: "bg-purple-500" },
+  green:  { dot: "bg-green-400",  chip: "bg-green-500/12 text-green-300 border-green-500/25",   bar: "bg-green-500" },
+  yellow: { dot: "bg-yellow-400", chip: "bg-yellow-500/12 text-yellow-200 border-yellow-500/25", bar: "bg-yellow-500" },
+  pink:   { dot: "bg-pink-400",   chip: "bg-pink-500/12 text-pink-300 border-pink-500/25",     bar: "bg-pink-500" },
+  orange: { dot: "bg-orange-400", chip: "bg-orange-500/12 text-orange-300 border-orange-500/25", bar: "bg-orange-500" },
+};
+const catStyle = (name) => CAT_STYLES[(CATEGORIES.find(c => c.name === name) || {}).color || "blue"];
+
+const FILE_TYPE = {
+  pdf:   { color: "text-red-400",   bg: "bg-red-500/10",   border: "border-red-500/20",   label: "PDF",  ext: "pdf" },
+  image: { color: "text-pink-400",  bg: "bg-pink-500/10",  border: "border-pink-500/20",  label: "IMG",  ext: "png" },
+  doc:   { color: "text-blue-400",  bg: "bg-blue-500/10",  border: "border-blue-500/20",  label: "DOC",  ext: "docx" },
+  xlsx:  { color: "text-green-400", bg: "bg-green-500/10", border: "border-green-500/20", label: "XLS",  ext: "xlsx" },
+};
+const fileTypeFromTitle = (t) => {
+  const lo = t.toLowerCase();
+  if (lo.endsWith(".pdf") || lo.includes("permit") || lo.includes("letter") || lo.includes("contract") || lo.includes("invoice") || lo.includes("policy") || lo.includes("transcript")) return "pdf";
+  if (lo.endsWith(".png") || lo.endsWith(".jpg") || lo.endsWith(".jpeg") || lo.includes("scan")) return "image";
+  if (lo.endsWith(".xlsx") || lo.includes("budget")) return "xlsx";
+  return "doc";
+};
+
+const RECENT_DOCS = [
+  { id: "r1", title: "Work Permit 2024.pdf",         category: "Legal",     date: "2 hours ago", confidence: 0.96 },
+  { id: "r2", title: "Q3 Tax Return.pdf",            category: "Finance",   date: "yesterday",   confidence: 0.91 },
+  { id: "r3", title: "Resume — Senior PM.docx",      category: "Career",    date: "2 days ago",  confidence: 0.88 },
+  { id: "r4", title: "MIT Transcript.pdf",           category: "Education", date: "3 days ago",  confidence: 0.94 },
+  { id: "r5", title: "Insurance Card Scan.png",      category: "Medical",   date: "5 days ago",  confidence: 0.42 },
+];
+
+const DOCS = [
+  { id: "d1", title: "Work Permit 2024.pdf",        path: "~/Documents/Immigration/work-permit-2024.pdf",       category: "Legal",     subcategory: "Immigration", summary: "PGWP work permit valid Mar 2024 – Mar 2027. Issued by IRCC.",                          size: "1.4 MB",  date: "Mar 12, 2024",  confidence: 0.96, tags: ["pgwp", "ircc", "2024"] },
+  { id: "d2", title: "Q3 Tax Return.pdf",           path: "~/Documents/Finance/2024/q3-tax-return.pdf",          category: "Finance",   subcategory: "Tax",         summary: "Q3 2024 federal tax return. AGI $182k. Refund $1,204 deposited Apr 2024.",            size: "4.1 MB",  date: "Apr 18, 2024",  confidence: 0.91, tags: ["taxes", "2024", "federal"] },
+  { id: "d3", title: "Resume — Senior PM.docx",     path: "~/Career/resume/resume-senior-pm-v3.docx",            category: "Career",    subcategory: "Resume",      summary: "Senior PM resume v3 with updated experience at Acme Corp and Northwind.",            size: "118 KB",  date: "Sep 28, 2024",  confidence: 0.88, tags: ["resume", "pm", "v3"] },
+  { id: "d4", title: "MIT Transcript.pdf",          path: "~/Documents/Education/mit-transcript-final.pdf",      category: "Education", subcategory: "Transcript",  summary: "Official MIT undergraduate transcript. GPA 4.6/5.0. Issued Jun 2019.",                size: "640 KB",  date: "Jun 10, 2019",  confidence: 0.94, tags: ["mit", "transcript"] },
+  { id: "d5", title: "Insurance Card Scan.png",     path: "~/Scans/insurance-card-2024.png",                     category: "Medical",   subcategory: "Insurance",   summary: "Scanned health insurance card front and back. OCR extracted member ID and group #.", size: "1.8 MB",  date: "Jan 22, 2024",  confidence: 0.42, tags: ["insurance", "scan"] },
+  { id: "d6", title: "Apartment Lease 2024.pdf",    path: "~/Documents/Personal/lease-2024-renewal.pdf",         category: "Personal",  subcategory: "Housing",     summary: "Apartment lease renewal Apr 2024 – Mar 2025. Auto-renew with 60 days notice.",       size: "2.1 MB",  date: "Mar 30, 2024",  confidence: 0.92, tags: ["lease", "renewal"] },
+];
+
+const DUPLICATES = [
+  { hash: "b3a1c9f7e2d4", count: 3, files: [
+    { title: "Q3 Tax Return.pdf",  path: "~/Documents/Finance/2024/q3-tax-return.pdf", size: "4.1 MB", date: "Apr 18, 2024" },
+    { title: "q3-tax-return.pdf",  path: "~/Downloads/q3-tax-return.pdf",              size: "4.1 MB", date: "Apr 18, 2024" },
+    { title: "tax-return.pdf",     path: "~/Desktop/Tax/tax-return.pdf",                size: "4.1 MB", date: "Apr 18, 2024" },
+  ]},
+  { hash: "8f2e0a55cd91", count: 3, files: [
+    { title: "Work Permit 2024.pdf",  path: "~/Documents/Immigration/work-permit-2024.pdf", size: "1.4 MB", date: "Mar 12, 2024" },
+    { title: "work-permit.pdf",       path: "~/Desktop/work-permit.pdf",                    size: "1.4 MB", date: "Mar 12, 2024" },
+    { title: "PGWP_final.pdf",        path: "~/Downloads/PGWP_final.pdf",                   size: "1.4 MB", date: "Mar 12, 2024" },
+  ]},
+];
+
+const WATCHED = [
+  { path: "/Volumes/Mihir-SSD/Documents", count: 138, lastScan: "10 minutes ago" },
+  { path: "~/Downloads",                  count: 412, lastScan: "2 hours ago" },
+];
+
+/* ───────────────────────── Tiny primitives ───────────────────────── */
+function CategoryBadge({ name, size = "md", outline, active, onClick }) {
+  const s = catStyle(name);
+  const sizes = { sm: "px-1.5 py-0.5 text-[10px] gap-1", md: "px-2 py-0.5 text-[11px] gap-1.5" };
+  return (
+    <span onClick={onClick}
+          className={[
+            "inline-flex items-center rounded-md border font-medium tracking-wide",
+            sizes[size],
+            outline ? "bg-transparent text-neutral-300 border-white/10" : s.chip,
+            active ? "ring-1 ring-blue-500/60" : "",
+            onClick ? "cursor-pointer hover:brightness-125" : ""
+          ].join(" ")}>
+      <span className={"w-1.5 h-1.5 rounded-full " + s.dot} />
+      {name}
+    </span>
+  );
+}
+
+function Confidence({ value }) {
+  const pct = Math.round(value * 100);
+  const cls = pct > 80 ? "text-green-400" : pct >= 50 ? "text-yellow-400" : "text-red-400";
+  return <span className={"font-mono tabular-nums text-[11px] " + cls}>{pct}%</span>;
+}
+
+function FileTypeIcon({ kind, size = 36 }) {
+  const ft = FILE_TYPE[kind] || FILE_TYPE.doc;
+  return (
+    <div style={{ width: size, height: size }}
+         className={["rounded-md flex items-center justify-center font-mono text-[9px] font-semibold border",
+                     ft.bg, ft.color, ft.border].join(" ")}>
+      {ft.label}
+    </div>
+  );
+}
+
+function Button({ variant = "secondary", size = "md", leadingIcon, trailingIcon, children, onClick, disabled, className = "" }) {
+  const sizes = { sm: "h-7 px-2.5 text-[11px] gap-1.5", md: "h-8 px-3 text-[12px] gap-1.5", lg: "h-9 px-4 text-[13px] gap-2" };
+  const variants = {
+    primary:   "bg-blue-600 hover:bg-blue-500 text-white border border-blue-500/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]",
+    secondary: "bg-white/[0.04] hover:bg-white/[0.08] text-neutral-100 border border-white/10",
+    ghost:     "bg-transparent hover:bg-white/[0.05] text-neutral-300 border border-transparent",
+    success:   "bg-green-600 hover:bg-green-500 text-white border border-green-500/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]",
+    danger:    "bg-transparent hover:bg-red-500/10 text-red-400 border border-red-500/30",
+  };
+  return (
+    <button onClick={onClick} disabled={disabled}
+            className={["inline-flex items-center justify-center rounded-md font-medium transition-colors whitespace-nowrap",
+                        sizes[size], variants[variant], disabled ? "opacity-40 cursor-not-allowed" : "", className].join(" ")}>
+      {leadingIcon && <Icon name={leadingIcon} size={size === "sm" ? 12 : 13} />}
+      {children}
+      {trailingIcon && <Icon name={trailingIcon} size={size === "sm" ? 12 : 13} />}
+    </button>
+  );
+}
+
+function IconButton({ icon, color, onClick, title }) {
+  return (
+    <button onClick={onClick} title={title}
+            className={["w-7 h-7 grid place-items-center rounded-md transition-colors",
+                        color === "red" ? "text-red-400 hover:bg-red-500/10" : "text-neutral-400 hover:bg-white/[0.06] hover:text-neutral-100"].join(" ")}>
+      <Icon name={icon} size={13} />
+    </button>
+  );
+}
+
+function Card({ children, className = "" }) {
+  return (
+    <div className={["bg-[#141414] border border-white/[0.06] rounded-xl",
+                     "shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]", className].join(" ")}>
+      {children}
+    </div>
+  );
+}
+
+function Kbd({ children }) {
+  return <kbd className="inline-flex items-center px-1.5 h-5 text-[10px] font-mono text-neutral-300 bg-white/[0.05] border border-white/10 border-b-2 rounded">{children}</kbd>;
+}
+
+/* ───────────────────────── Sidebar ───────────────────────── */
+function Sidebar({ page, onNav, activeCategory, collapsed, onToggle }) {
+  const NAV = [
+    { id: "dashboard",  label: "Dashboard",  icon: "layout-dashboard" },
+    { id: "chat",       label: "Chat",       icon: "message-square" },
+    { id: "documents",  label: "Documents",  icon: "file-text" },
+    { id: "search",     label: "Search",     icon: "search", kbd: "⌘K" },
+    { id: "duplicates", label: "Duplicates", icon: "copy" },
+    { id: "settings",   label: "Settings",   icon: "settings" },
+  ];
+  const w = collapsed ? "w-14" : "w-[260px]";
+  return (
+    <aside className={[w, "shrink-0 bg-[#0e0e0e] border-r border-white/[0.06] flex flex-col transition-[width] duration-200"].join(" ")}>
+      <div className="h-14 flex items-center gap-2.5 px-4 shrink-0">
+        <div className="w-7 h-7 rounded-md bg-gradient-to-br from-blue-500 to-blue-700 grid place-items-center shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]">
+          <Icon name="file-stack" size={15} className="text-white" />
+        </div>
+        {!collapsed && <div className="text-[14px] font-semibold tracking-tight text-white">DocuVault</div>}
+      </div>
+
+      <nav className="px-2 flex flex-col gap-0.5">
+        {NAV.map(item => {
+          const active = page === item.id;
+          return (
+            <button key={item.id} onClick={() => onNav(item.id)}
+                    className={["relative flex items-center gap-2.5 h-8 rounded-md transition-colors",
+                                collapsed ? "justify-center" : "px-3",
+                                active ? "bg-white/[0.07] text-white" : "text-neutral-400 hover:bg-white/[0.04] hover:text-neutral-100"].join(" ")}>
+              {active && <span className="absolute -left-2 top-1.5 bottom-1.5 w-[2px] rounded-r bg-blue-500" />}
+              <Icon name={item.icon} size={14} />
+              {!collapsed && <span className="flex-1 text-left text-[12.5px] font-medium">{item.label}</span>}
+              {!collapsed && item.kbd && <Kbd>{item.kbd}</Kbd>}
+            </button>
+          );
+        })}
+      </nav>
+
+      {!collapsed && (
+        <div className="mt-5 px-2 flex-1 min-h-0 flex flex-col">
+          <div className="flex items-center justify-between px-3 pb-2">
+            <span className="text-[10px] font-medium tracking-[0.1em] uppercase text-neutral-500">Categories</span>
+            <span className="text-[10px] font-mono text-neutral-600">{CATEGORIES.length}</span>
+          </div>
+          <div className="flex flex-col gap-0.5 overflow-auto pb-3">
+            {CATEGORIES.map(cat => {
+              const s = catStyle(cat.name);
+              const active = activeCategory === cat.name;
+              return (
+                <button key={cat.name} onClick={() => onNav("documents", { category: cat.name })}
+                        className={["flex items-center gap-2.5 h-7 px-3 rounded-md transition-colors",
+                                    active ? "bg-white/[0.07] text-white" : "text-neutral-400 hover:bg-white/[0.04] hover:text-neutral-100"].join(" ")}>
+                  <span className={"w-1.5 h-1.5 rounded-full " + s.dot} />
+                  <span className="flex-1 text-left text-[12px]">{cat.name}</span>
+                  <span className="font-mono text-[10px] tabular-nums text-neutral-500">{cat.count}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+      {collapsed && <div className="flex-1" />}
+
+      <div className="border-t border-white/[0.06] p-2">
+        <button onClick={onToggle}
+                className={["flex items-center gap-2.5 h-8 w-full rounded-md text-neutral-400 hover:bg-white/[0.04] hover:text-neutral-100 transition-colors",
+                            collapsed ? "justify-center" : "px-3"].join(" ")}>
+          <Icon name={collapsed ? "chevrons-right" : "chevrons-left"} size={14} />
+          {!collapsed && <span className="text-[12px]">Collapse</span>}
+        </button>
+      </div>
+    </aside>
+  );
+}
+
+/* ───────────────────────── Page header ───────────────────────── */
+function PageHeader({ title, subtitle, actions }) {
+  return (
+    <div className="flex items-end justify-between px-6 pt-5 pb-4 border-b border-white/[0.06] gap-4">
+      <div>
+        <h1 className="text-[22px] font-semibold tracking-tight text-white">{title}</h1>
+        {subtitle && <div className="text-[12px] text-neutral-400 mt-0.5">{subtitle}</div>}
+      </div>
+      {actions && <div className="flex gap-2">{actions}</div>}
+    </div>
+  );
+}
+
+/* ───────────────────────── Dashboard ───────────────────────── */
+function Dashboard({ onNav }) {
+  const stats = [
+    { icon: "files",        label: "Documents",        value: 138,   delta: "+12" },
+    { icon: "hard-drive",   label: "Storage",          value: "2.4 GB", delta: "84% indexed" },
+    { icon: "tags",         label: "Categories",       value: 6,     delta: "auto-derived" },
+    { icon: "alert-circle", label: "Pending review",   value: 3,     delta: "<50% confidence", warn: true },
+  ];
+  const max = Math.max(...CATEGORIES.map(c => c.count));
+  const alerts = [
+    { tone: "red",    icon: "alert-octagon",  title: "2 documents expiring in 30 days",        sub: "Work Permit · Lease renewal" },
+    { tone: "yellow", icon: "copy",            title: "5 duplicate files found",                sub: "412 MB recoverable across Documents and Downloads" },
+    { tone: "blue",   icon: "info",            title: "3 documents need review (low confidence)", sub: "AI is unsure how to classify these" },
+  ];
+  const toneMap = {
+    red:    { ic: "text-red-400",    bg: "bg-red-500/8",    bd: "border-red-500/25" },
+    yellow: { ic: "text-yellow-400", bg: "bg-yellow-500/8", bd: "border-yellow-500/25" },
+    blue:   { ic: "text-blue-400",   bg: "bg-blue-500/8",   bd: "border-blue-500/25" },
+  };
+  return (
+    <div className="flex flex-col h-full overflow-hidden">
+      <PageHeader title="Dashboard" subtitle="Overview of your indexed documents."
+                  actions={<>
+                    <Button variant="ghost" leadingIcon="message-square" onClick={() => onNav("chat")}>Open chat</Button>
+                    <Button variant="primary" leadingIcon="folder-plus" onClick={() => onNav("settings")}>Scan a folder</Button>
+                  </>} />
+      <div className="flex-1 overflow-auto px-6 py-5 flex flex-col gap-5">
+        {/* Stat row */}
+        <div className="grid grid-cols-4 gap-3">
+          {stats.map((s, i) => (
+            <Card key={i} className="p-4">
+              <div className="flex items-center gap-2 text-[10.5px] uppercase tracking-[0.06em] text-neutral-500">
+                <Icon name={s.icon} size={13} className={s.warn ? "text-yellow-400" : ""} />
+                {s.label}
+              </div>
+              <div className="text-[26px] font-semibold tracking-tight text-white tabular-nums mt-2">{s.value}</div>
+              <div className="text-[11px] text-neutral-500 mt-1.5">{s.delta}</div>
+            </Card>
+          ))}
+        </div>
+
+        {/* Alerts */}
+        <div>
+          <div className="text-[10.5px] uppercase tracking-[0.08em] text-neutral-500 mb-2 font-medium">Proactive alerts</div>
+          <div className="grid grid-cols-3 gap-3">
+            {alerts.map((a, i) => {
+              const t = toneMap[a.tone];
+              return (
+                <Card key={i} className={"p-3.5 flex gap-3 " + t.bd + " " + t.bg}>
+                  <div className={"w-7 h-7 rounded-md grid place-items-center shrink-0 " + t.ic}>
+                    <Icon name={a.icon} size={14} />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-[12.5px] font-medium text-white">{a.title}</div>
+                    <div className="text-[11px] text-neutral-400 mt-1 leading-relaxed">{a.sub}</div>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Chart + Recent docs */}
+        <div className="grid grid-cols-[1fr_1.4fr] gap-3">
+          <Card>
+            <div className="px-4 py-3 border-b border-white/[0.06] text-[12.5px] font-semibold text-white">Documents per category</div>
+            <div className="p-4 flex flex-col gap-2.5">
+              {CATEGORIES.map(cat => {
+                const s = catStyle(cat.name);
+                const pct = (cat.count / max) * 100;
+                return (
+                  <div key={cat.name} className="flex items-center gap-2.5">
+                    <div className="w-20 text-[12px] text-neutral-300 truncate">{cat.name}</div>
+                    <div className="flex-1 h-1.5 rounded-full bg-white/[0.04] overflow-hidden">
+                      <div className={"h-full rounded-full " + s.bar} style={{ width: pct + "%" }} />
+                    </div>
+                    <div className="w-7 text-right text-[11px] font-mono tabular-nums text-neutral-400">{cat.count}</div>
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
+          <Card>
+            <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
+              <div className="text-[12.5px] font-semibold text-white">Recent documents</div>
+              <button onClick={() => onNav("documents")} className="text-[11px] text-neutral-400 hover:text-white">View all →</button>
+            </div>
+            <div className="p-1.5">
+              {RECENT_DOCS.map(d => (
+                <div key={d.id} className="flex items-center gap-3 p-2.5 rounded-md hover:bg-white/[0.04] cursor-pointer transition-colors">
+                  <FileTypeIcon kind={fileTypeFromTitle(d.title)} size={28} />
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[12.5px] text-white truncate">{d.title}</div>
+                    <div className="text-[10.5px] text-neutral-500 mt-0.5">{d.date}</div>
+                  </div>
+                  <CategoryBadge name={d.category} size="sm" />
+                  <Confidence value={d.confidence} />
+                </div>
+              ))}
+            </div>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ───────────────────────── Chat ───────────────────────── */
+function Chat({ onOpenDoc }) {
+  const seeded = [
+    { role: "user", text: "When does my work permit expire?" },
+    { role: "assistant",
+      text: "Based on your immigration documents, your work permit (PGWP) expires on 2027-03-15. You have 10 months remaining. I'd recommend starting your renewal process by January 2027.",
+      sources: [
+        { title: "Work Permit 2024.pdf",         category: "Legal" },
+        { title: "PGWP Extension Letter.pdf",    category: "Legal" },
+      ] },
+  ];
+  const [msgs, setMsgs] = useState(seeded);
+  const [input, setInput] = useState("");
+  const [typing, setTyping] = useState(false);
+  const endRef = useRef(null);
+  useEffect(() => { endRef.current && endRef.current.scrollIntoView({ block: "end" }); }, [msgs, typing]);
+
+  const starters = [
+    { icon: "calendar-clock", q: "What's expiring in the next 60 days?" },
+    { icon: "search",         q: "Find my 2023 tax documents" },
+    { icon: "file-text",      q: "Summarize my lease agreement" },
+    { icon: "users",          q: "Who is mentioned across my contracts?" },
+  ];
+
+  function send(q) {
+    const text = (q ?? input).trim();
+    if (!text) return;
+    setMsgs(m => [...m, { role: "user", text }]);
+    setInput(""); setTyping(true);
+    setTimeout(() => {
+      setTyping(false);
+      setMsgs(m => [...m, {
+        role: "assistant",
+        text: `I checked your indexed documents for "${text.replace(/[?.!]+$/, "")}". Two relevant files came up. Open them below to verify.`,
+        sources: [{ title: "Work Permit 2024.pdf", category: "Legal" }],
+      }]);
+    }, 900);
+  }
+
+  return (
+    <div className="flex flex-col h-full overflow-hidden">
+      <PageHeader title="Chat with your documents" subtitle="Ask anything. Answers cite the files they came from."
+                  actions={<Button variant="ghost" leadingIcon="trash-2" disabled={msgs.length === 0} onClick={() => setMsgs([])}>Clear history</Button>} />
+      <div className="flex-1 overflow-auto px-6 py-5">
+        <div className="max-w-[760px] mx-auto flex flex-col gap-3.5">
+          {msgs.length === 0 && (
+            <div className="grid grid-cols-2 gap-2 mb-3">
+              {starters.map((s, i) => (
+                <button key={i} onClick={() => send(s.q)}
+                        className="flex items-center gap-2.5 px-3.5 py-3 bg-[#141414] border border-white/[0.06] rounded-md hover:bg-white/[0.04] transition-colors text-left">
+                  <Icon name={s.icon} size={14} className="text-neutral-400" />
+                  <div className="text-[12.5px] text-neutral-100 flex-1">{s.q}</div>
+                  <Icon name="arrow-up-right" size={11} className="text-neutral-500" />
+                </button>
+              ))}
+            </div>
+          )}
+          {msgs.map((m, i) => <ChatTurn key={i} msg={m} onOpenDoc={onOpenDoc} />)}
+          {typing && (
+            <div className="flex">
+              <div className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-2xl rounded-bl-sm bg-[#141414] border border-white/[0.06] text-[12px] text-neutral-400">
+                <span className="typing-dots"><span /><span /><span /></span> Reading your documents…
+              </div>
+            </div>
+          )}
+          <div ref={endRef} />
+        </div>
+      </div>
+      <div className="border-t border-white/[0.06] bg-[#0e0e0e] px-6 py-3.5">
+        <div className="max-w-[760px] mx-auto flex gap-2">
+          <div className="flex-1 flex items-center gap-2 px-3 h-[42px] bg-[#141414] border border-white/10 rounded-md focus-within:border-blue-500/60 focus-within:ring-2 focus-within:ring-blue-500/15 transition-colors">
+            <Icon name="paperclip" size={14} className="text-neutral-500" />
+            <input value={input} onChange={e => setInput(e.target.value)}
+                   onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
+                   placeholder="Ask about your documents…"
+                   className="flex-1 bg-transparent outline-none text-[13.5px] text-white placeholder:text-neutral-500" />
+            <Kbd>↵</Kbd>
+          </div>
+          <Button variant="primary" size="lg" leadingIcon="send" onClick={() => send()} disabled={!input.trim()}>Send</Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+function ChatTurn({ msg, onOpenDoc }) {
+  if (msg.role === "user") return (
+    <div className="flex justify-end">
+      <div className="max-w-[80%] px-4 py-2.5 rounded-2xl rounded-br-sm bg-blue-600 text-white text-[13.5px] leading-relaxed">{msg.text}</div>
+    </div>
+  );
+  return (
+    <div className="flex">
+      <div className="max-w-[85%] px-4 py-3 rounded-2xl rounded-bl-sm bg-[#141414] border border-white/[0.06] text-neutral-100 text-[13.5px] leading-relaxed">
+        {msg.text}
+        {msg.sources && msg.sources.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-white/[0.06]">
+            {msg.sources.map((s, i) => (
+              <button key={i} onClick={() => onOpenDoc && onOpenDoc(s.title)}
+                      className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/[0.05] hover:bg-white/[0.08] border border-white/10 text-[11px] text-neutral-200 transition-colors">
+                <span className={"w-1.5 h-1.5 rounded-full " + catStyle(s.category).dot} />
+                {s.title}
+                <Icon name="external-link" size={10} className="text-neutral-500" />
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ───────────────────────── Documents ───────────────────────── */
+function Documents({ params }) {
+  const [view, setView] = useState("list");
+  const [sort, setSort] = useState("Date");
+  const [cat, setCat] = useState(params?.category || "All");
+  useEffect(() => { setCat(params?.category || "All"); }, [params?.category]);
+  const filtered = useMemo(() => cat === "All" ? DOCS : DOCS.filter(d => d.category === cat), [cat]);
+
+  return (
+    <div className="flex flex-col h-full overflow-hidden">
+      <PageHeader title={cat === "All" ? "All documents" : cat}
+                  subtitle={`${filtered.length} documents`}
+                  actions={<Button variant="primary" leadingIcon="folder-plus">Scan a folder</Button>} />
+      <div className="flex items-center gap-2 px-6 py-2.5 border-b border-white/[0.06]">
+        <Pill label="Category" value={cat} options={["All", ...CATEGORIES.map(c => c.name)]} onChange={setCat} />
+        <Pill label="Sort" value={sort} options={["Date", "Name", "Size"]} onChange={setSort} />
+        <div className="flex-1" />
+        <div className="inline-flex p-0.5 bg-white/[0.04] border border-white/10 rounded-md">
+          {[{ id: "list", icon: "list" }, { id: "grid", icon: "layout-grid" }].map(o => (
+            <button key={o.id} onClick={() => setView(o.id)}
+                    className={["w-7 h-6 grid place-items-center rounded-[5px] transition-colors",
+                                view === o.id ? "bg-[#141414] text-white shadow-sm" : "text-neutral-500 hover:text-neutral-200"].join(" ")}>
+              <Icon name={o.icon} size={12} />
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="flex-1 overflow-auto px-4 py-3">
+        {view === "list" ? (
+          <div className="flex flex-col gap-1">
+            {filtered.map(d => <DocRow key={d.id} doc={d} />)}
+          </div>
+        ) : (
+          <div className="grid grid-cols-3 gap-3 p-2">
+            {filtered.map(d => <DocCard key={d.id} doc={d} />)}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+function Pill({ label, value, options = [], onChange }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="relative">
+      <button onClick={() => setOpen(o => !o)}
+              className="inline-flex items-center gap-1.5 h-7 px-2.5 bg-[#141414] hover:bg-white/[0.06] border border-white/10 rounded-md text-[11.5px] text-neutral-200 transition-colors">
+        <span className="text-neutral-500">{label}:</span>
+        <span className="text-white">{value}</span>
+        <Icon name="chevron-down" size={11} className="text-neutral-500" />
+      </button>
+      {open && (
+        <div className="absolute z-10 top-9 left-0 min-w-[160px] bg-[#1a1a1a] border border-white/10 rounded-md shadow-xl p-1">
+          {options.map(o => (
+            <button key={o} onClick={() => { onChange && onChange(o); setOpen(false); }}
+                    className={["w-full text-left px-2.5 py-1.5 rounded text-[12px] flex items-center justify-between transition-colors",
+                                o === value ? "bg-blue-600/20 text-white" : "text-neutral-300 hover:bg-white/[0.05]"].join(" ")}>
+              {o}
+              {o === value && <Icon name="check" size={12} className="text-blue-400" />}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+function DocRow({ doc }) {
+  return (
+    <div className="group flex items-center gap-3.5 p-2.5 rounded-md hover:bg-[#141414] hover:border-white/[0.06] border border-transparent transition-colors">
+      <FileTypeIcon kind={fileTypeFromTitle(doc.title)} size={36} />
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2">
+          <div className="text-[13px] font-semibold text-white truncate">{doc.title}</div>
+          <CategoryBadge name={doc.category} size="sm" />
+          <CategoryBadge name={doc.subcategory} size="sm" outline />
+        </div>
+        <div className="text-[12px] text-neutral-400 mt-0.5 truncate">{doc.summary}</div>
+        <div className="flex items-center gap-2 mt-1.5">
+          <span className="font-mono text-[10.5px] text-neutral-500 truncate">{doc.path}</span>
+          <span className="flex gap-1 ml-auto">
+            {doc.tags.map(t => (
+              <span key={t} className="px-1.5 py-0.5 rounded bg-white/[0.04] border border-white/[0.06] text-[10px] text-neutral-400 font-mono">{t}</span>
+            ))}
+          </span>
+        </div>
+      </div>
+      <div className="flex flex-col items-end gap-1 shrink-0 w-[110px] whitespace-nowrap">
+        <span className="font-mono text-[11px] text-neutral-400">{doc.size}</span>
+        <span className="text-[11px] text-neutral-500">{doc.date}</span>
+        <Confidence value={doc.confidence} />
+      </div>
+      <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+        <IconButton icon="external-link" title="Open file" />
+        <IconButton icon="folder" title="Reveal in Finder" />
+        <IconButton icon="refresh-cw" title="Reclassify" />
+        <IconButton icon="trash-2" color="red" title="Delete" />
+      </div>
+    </div>
+  );
+}
+function DocCard({ doc }) {
+  return (
+    <Card className="overflow-hidden hover:border-white/[0.12] transition-colors cursor-pointer">
+      <div className="aspect-[4/3] bg-[#0e0e0e] grid place-items-center border-b border-white/[0.06]">
+        <FileTypeIcon kind={fileTypeFromTitle(doc.title)} size={48} />
+      </div>
+      <div className="p-3.5">
+        <div className="flex items-start justify-between gap-2">
+          <CategoryBadge name={doc.category} size="sm" />
+          <Confidence value={doc.confidence} />
+        </div>
+        <div className="text-[13px] font-semibold text-white mt-2 leading-snug">{doc.title}</div>
+        <div className="font-mono text-[10.5px] text-neutral-500 mt-1.5 truncate">{doc.path}</div>
+        <div className="flex justify-between text-[11px] text-neutral-500 mt-2">
+          <span className="font-mono">{doc.size}</span>
+          <span>{doc.date}</span>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+/* ───────────────────────── Search ───────────────────────── */
+function Search() {
+  const [q, setQ] = useState("tax");
+  const [activeCat, setActiveCat] = useState("All");
+  const all = useMemo(() => DOCS.filter(d =>
+    (activeCat === "All" || d.category === activeCat)
+    && (q.trim() === "" || (d.title + " " + d.summary + " " + d.path).toLowerCase().includes(q.toLowerCase()))
+  ), [q, activeCat]);
+  const elapsed = 12;
+  function highlight(text) {
+    if (!q.trim()) return text;
+    const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "ig");
+    return text.split(re).map((p, i) => i % 2
+      ? <mark key={i} className="bg-yellow-500/30 text-yellow-100 px-0.5 rounded-sm">{p}</mark>
+      : p);
+  }
+  const results = all.slice(0, 3);
+  return (
+    <div className="flex flex-col h-full overflow-hidden">
+      <div className="px-6 pt-5 pb-3">
+        <div className="flex items-center gap-2.5 h-11 px-4 bg-[#141414] border border-white/10 rounded-md focus-within:border-blue-500/60 focus-within:ring-2 focus-within:ring-blue-500/15 transition-colors">
+          <Icon name="search" size={16} className="text-neutral-500" />
+          <input autoFocus value={q} onChange={e => setQ(e.target.value)}
+                 placeholder="Start typing to search across all your documents…"
+                 className="flex-1 bg-transparent outline-none text-[15px] text-white placeholder:text-neutral-500" />
+          {q && <button onClick={() => setQ("")} className="text-neutral-500 hover:text-neutral-200"><Icon name="x" size={13} /></button>}
+          <Kbd>esc</Kbd>
+        </div>
+        <div className="font-mono text-[11px] text-neutral-500 mt-2.5">24 results in {elapsed}ms</div>
+      </div>
+      <div className="px-6 pb-3 flex flex-wrap gap-1.5 border-b border-white/[0.06]">
+        {["All", ...CATEGORIES.slice(0, 4).map(c => c.name)].map(c => (
+          <button key={c} onClick={() => setActiveCat(c)}
+                  className={["px-2.5 h-6 rounded-md text-[11px] border transition-colors",
+                              c === activeCat
+                                ? "bg-blue-600/20 text-blue-200 border-blue-500/40"
+                                : "bg-white/[0.03] text-neutral-300 border-white/10 hover:bg-white/[0.06]"].join(" ")}>
+            {c}
+          </button>
+        ))}
+      </div>
+      <div className="flex-1 overflow-auto px-6 py-4 flex flex-col gap-2.5">
+        {results.length === 0 ? (
+          <div className="text-center py-16 text-neutral-500 text-[13px]">No matches.</div>
+        ) : results.map(d => (
+          <Card key={d.id} className="p-4 hover:border-white/[0.12] transition-colors cursor-pointer">
+            <div className="flex gap-3.5">
+              <FileTypeIcon kind={fileTypeFromTitle(d.title)} size={36} />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <div className="text-[14px] font-semibold text-white">{highlight(d.title)}</div>
+                  <CategoryBadge name={d.category} size="sm" />
+                </div>
+                <div className="text-[12.5px] text-neutral-300 mt-1.5 leading-relaxed">{highlight(d.summary)}</div>
+                <div className="font-mono text-[10.5px] text-neutral-500 mt-2 truncate">{highlight(d.path)}</div>
+              </div>
+              <div className="flex flex-col items-end gap-2 shrink-0">
+                <Confidence value={d.confidence} />
+                <div className="flex gap-1">
+                  <IconButton icon="external-link" title="Open" />
+                  <IconButton icon="folder" title="Reveal" />
+                </div>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ───────────────────────── Duplicates ───────────────────────── */
+function Duplicates() {
+  return (
+    <div className="flex flex-col h-full overflow-hidden">
+      <PageHeader title="Duplicates"
+                  subtitle="Files with identical content (same SHA-256). Choose which one to keep."
+                  actions={<Button variant="ghost" leadingIcon="refresh-cw">Re-scan</Button>} />
+      <div className="flex-1 overflow-auto px-6 py-5 flex flex-col gap-4">
+        {DUPLICATES.map(g => (
+          <Card key={g.hash}>
+            <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
+              <div className="flex items-center gap-2.5">
+                <Icon name="copy" size={14} className="text-neutral-400" />
+                <div>
+                  <div className="text-[12.5px] font-medium text-white">{g.count} copies</div>
+                  <div className="font-mono text-[10.5px] text-neutral-500 mt-0.5">sha256: {g.hash}…</div>
+                </div>
+              </div>
+              <div className="font-mono text-[11px] text-neutral-500">{g.files[0].size} · {((g.count - 1) * 4.1).toFixed(1)} MB recoverable</div>
+            </div>
+            <div>
+              {g.files.map((f, i) => (
+                <div key={i} className={["flex items-center gap-3 px-4 py-2.5 hover:bg-white/[0.03] transition-colors",
+                                          i > 0 ? "border-t border-white/[0.04]" : ""].join(" ")}>
+                  <FileTypeIcon kind="pdf" size={26} />
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[12.5px] text-white truncate">{f.title}</div>
+                    <div className="font-mono text-[10.5px] text-neutral-500 mt-0.5 truncate">{f.path}</div>
+                  </div>
+                  <span className="font-mono text-[11px] text-neutral-400">{f.size}</span>
+                  <span className="text-[11px] text-neutral-500 w-[90px] text-right">{f.date}</span>
+                  <Button size="sm" variant="success" leadingIcon="check">Keep</Button>
+                </div>
+              ))}
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ───────────────────────── Settings ───────────────────────── */
+function Settings() {
+  const [path, setPath] = useState("/Volumes/Mihir-SSD");
+  const [previewed, setPreviewed] = useState(true);
+  const [scanning, setScanning] = useState(false);
+  const [apiKey, setApiKey] = useState("sk-ant-•••••••••••••••••••••••••••YQrk");
+  return (
+    <div className="flex flex-col h-full overflow-hidden">
+      <PageHeader title="Settings" subtitle="Manage scan locations, AI access, and storage." />
+      <div className="flex-1 overflow-auto px-6 py-5 flex flex-col gap-5 max-w-[920px]">
+        <Section title="Scan a folder" hint="Files stay where they are. Only metadata is stored.">
+          <div className="flex gap-2">
+            <div className="flex-1 flex items-center gap-2 h-9 px-3 bg-[#0e0e0e] border border-white/10 rounded-md">
+              <Icon name="folder" size={13} className="text-neutral-500" />
+              <input value={path} onChange={e => setPath(e.target.value)}
+                     className="flex-1 bg-transparent outline-none font-mono text-[12px] text-white" />
+            </div>
+            <Button variant="ghost" leadingIcon="eye" onClick={() => setPreviewed(true)}>Preview</Button>
+            <Button variant="primary" leadingIcon="play" onClick={() => { setScanning(true); setTimeout(() => setScanning(false), 1500); }}>
+              {scanning ? "Scanning…" : "Scan & Index"}
+            </Button>
+          </div>
+          {previewed && (
+            <div className="mt-3 flex items-center gap-2.5 px-3.5 py-2.5 bg-green-500/8 border border-green-500/25 rounded-md">
+              <Icon name="check-circle" size={14} className="text-green-400" />
+              <span className="text-[12.5px] text-neutral-100"><span className="font-semibold">148 files found</span> in this folder. Ready to index.</span>
+            </div>
+          )}
+        </Section>
+
+        <Section title="Watched folders" hint="Re-scanned automatically when files change.">
+          <div className="flex flex-col gap-2">
+            {WATCHED.map((w, i) => (
+              <div key={i} className="flex items-center gap-3 px-3.5 py-2.5 bg-[#0e0e0e] rounded-md border border-white/[0.06]">
+                <Icon name="folder" size={14} className="text-neutral-400" />
+                <div className="flex-1 min-w-0">
+                  <div className="font-mono text-[12px] text-white truncate">{w.path}</div>
+                  <div className="text-[11px] text-neutral-500 mt-0.5">{w.count} files · last scan {w.lastScan}</div>
+                </div>
+                <Button size="sm" variant="ghost" leadingIcon="refresh-cw">Rescan</Button>
+                <IconButton icon="x" />
+              </div>
+            ))}
+          </div>
+        </Section>
+
+        <Section title="Anthropic API key" hint="Used for AI classification and chat. Stored in OS keychain.">
+          <div className="flex items-center gap-2 h-9 px-3 bg-[#0e0e0e] border border-white/10 rounded-md">
+            <Icon name="key" size={13} className="text-neutral-500" />
+            <input value={apiKey} onChange={e => setApiKey(e.target.value)}
+                   className="flex-1 bg-transparent outline-none font-mono text-[12px] text-white" />
+          </div>
+        </Section>
+      </div>
+    </div>
+  );
+}
+function Section({ title, hint, children }) {
+  return (
+    <section>
+      <div className="mb-2.5">
+        <h3 className="text-[14px] font-semibold text-white tracking-tight">{title}</h3>
+        {hint && <div className="text-[12px] text-neutral-400 mt-0.5">{hint}</div>}
+      </div>
+      <Card className="p-4">{children}</Card>
+    </section>
+  );
+}
+
+/* ───────────────────────── Top bar ───────────────────────── */
+function TitleBar({ title }) {
+  return (
+    <div className="h-9 bg-[#0a0a0a] border-b border-white/[0.06] flex items-center px-3 gap-2.5 select-none">
+      <div className="flex gap-1.5">
+        <span className="w-3 h-3 rounded-full bg-red-500/90" />
+        <span className="w-3 h-3 rounded-full bg-yellow-500/90" />
+        <span className="w-3 h-3 rounded-full bg-green-500/90" />
+      </div>
+      <div className="flex-1 text-center text-[11.5px] text-neutral-400 font-medium">{title}</div>
+      <div className="w-12" />
+    </div>
+  );
+}
+
+/* ───────────────────────── App ───────────────────────── */
+function App() {
+  const [page, setPage] = useState("dashboard");
+  const [params, setParams] = useState({});
+  const [collapsed, setCollapsed] = useState(false);
+
+  function nav(p, prms = {}) { setPage(p); setParams(prms); }
+
+  const titles = { dashboard: "Dashboard", chat: "Chat", documents: params.category || "All documents", search: "Search", duplicates: "Duplicates", settings: "Settings" };
+
+  return (
+    <div className="h-full flex flex-col bg-[#0a0a0a] text-neutral-100">
+      <TitleBar title={"DocuVault — " + titles[page]} />
+      <div className="flex-1 flex min-h-0">
+        <Sidebar page={page} onNav={nav}
+                 activeCategory={page === "documents" ? params.category : null}
+                 collapsed={collapsed}
+                 onToggle={() => setCollapsed(c => !c)} />
+        <main data-screen-label={"app/" + page} className="flex-1 min-w-0 flex flex-col overflow-hidden">
+          {page === "dashboard"  && <Dashboard onNav={nav} />}
+          {page === "chat"       && <Chat onOpenDoc={() => {}} />}
+          {page === "documents"  && <Documents params={params} />}
+          {page === "search"     && <Search />}
+          {page === "duplicates" && <Duplicates />}
+          {page === "settings"   && <Settings />}
+        </main>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

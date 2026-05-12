@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="44" viewBox="0 0 220 44" fill="none">
+  
+  <rect x="2" y="2" width="40" height="40" rx="9" fill="oklch(0.175 0.005 264)" stroke="oklch(0.32 0.008 264)" stroke-width="1"></rect>
+  <rect x="10" y="14" width="20" height="25" rx="2" fill="oklch(0.275 0.007 264)" stroke="oklch(0.42 0.008 264)"></rect>
+  <rect x="13" y="10" width="20" height="25" rx="2" fill="oklch(0.32 0.008 264)" stroke="oklch(0.55 0.009 264)"></rect>
+  <rect x="16" y="6" width="20" height="25" rx="2" fill="oklch(0.62 0.19 248)" stroke="oklch(0.76 0.13 248)"></rect>
+  <path d="M20 14 L25 18.5 L20 23" stroke="oklch(0.985 0.002 264)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+  <path d="M27 14 L32 18.5 L27 23" stroke="oklch(0.985 0.002 264 / 0.55)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+  
+  <text x="54" y="29" font-family="Geist, -apple-system, sans-serif" font-weight="600" font-size="20" letter-spacing="-0.02em" fill="oklch(0.985 0.002 264)">DocuVault</text>
+</svg>

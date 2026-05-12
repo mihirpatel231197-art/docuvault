@@ -1,0 +1,44 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="_base.css"><style>
+  body { padding: 22px 24px; gap: 12px; }
+  .palette {
+    background: var(--bg-card); border: 1px solid var(--border-strong);
+    border-radius: var(--radius-xl); box-shadow: var(--shadow-overlay);
+    padding: 10px; display: flex; flex-direction: column; gap: 6px;
+  }
+  .input-row { display: flex; align-items: center; gap: 10px; padding: 8px 10px; }
+  .input-row input { flex: 1; background: transparent; border: 0; outline: 0; font-family: var(--font-sans); font-size: 14px; color: var(--fg-primary); }
+  .item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--radius-md); cursor: pointer; }
+  .item.active { background: var(--bg-pressed); }
+  .item .ico { width: 14px; height: 14px; color: var(--fg-tertiary); }
+  .item .label-i { font-size: 13px; color: var(--fg-primary); flex: 1; }
+  .item .hint { font-family: var(--font-mono); font-size: 10px; color: var(--fg-muted); }
+  .div-row { height: 1px; background: var(--border-faint); margin: 4px 2px; }
+  .group-label { font-size: 10px; font-weight: 500; letter-spacing: 0.08em; color: var(--fg-muted); text-transform: uppercase; padding: 6px 10px 2px; }
+</style></head><body>
+  <div class="label">Command palette · ⌘K</div>
+  <div class="palette">
+    <div class="input-row">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--fg-muted)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input value="lease" />
+      <kbd>esc</kbd>
+    </div>
+    <div class="div-row"></div>
+    <div class="group-label">Documents</div>
+    <div class="item active">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <div class="label-i">Lease agreement — 2024 renewal.pdf</div>
+      <div class="hint">↵ open</div>
+    </div>
+    <div class="item">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <div class="label-i">Lease 2022 — original.pdf</div>
+      <div class="hint">↵ open</div>
+    </div>
+    <div class="group-label">Actions</div>
+    <div class="item">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 21V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v16l4-2 4 2 4-2 2 2z"/></svg>
+      <div class="label-i">Scan a folder…</div>
+      <div class="hint">⌘N</div>
+    </div>
+  </div>
+</body></html>

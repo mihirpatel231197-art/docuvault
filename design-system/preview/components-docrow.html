@@ -1,0 +1,59 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="_base.css"><style>
+  body { padding: 22px 24px; gap: 10px; }
+  .row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px;
+    background: var(--bg-card); border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+  }
+  .row.hover { background: var(--bg-hover); }
+  .row.selected { background: var(--bg-pressed); border-color: var(--accent-500); box-shadow: 0 0 0 1px var(--accent-500); }
+  .icoChip { width: 32px; height: 32px; border-radius: var(--radius-md); display: grid; place-items: center; font-family: var(--font-mono); font-size: 10px; font-weight: 700; flex-shrink: 0; background: oklch(0.66 0.20 25 / 0.15); color: var(--ft-pdf); }
+  .grow { flex: 1; min-width: 0; }
+  .title { font-size: 13px; font-weight: 500; color: var(--fg-primary); }
+  .meta { display: flex; align-items: center; gap: 8px; margin-top: 3px; font-size: 11px; color: var(--fg-tertiary); }
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px; border-radius: var(--radius-md); font-size: 10px; font-weight: 500; color: var(--cat-1); background: oklch(0.70 0.15 248 / 0.12); border: 1px solid oklch(0.70 0.15 248 / 0.3); }
+  .dot { width: 5px; height: 5px; border-radius: 999px; }
+  .conf { font-family: var(--font-mono); font-size: 11px; color: var(--success); font-variant-numeric: tabular-nums; }
+  .actions { display: flex; gap: 4px; opacity: 0; transition: opacity 120ms; }
+  .row.hover .actions { opacity: 1; }
+  .iconbtn { width: 26px; height: 26px; display: grid; place-items: center; border-radius: var(--radius-sm); color: var(--fg-tertiary); }
+  .iconbtn:hover { background: var(--ink-4); color: var(--fg-primary); }
+</style></head><body>
+  <div class="label">Document row — list view</div>
+  <div class="row">
+    <div class="icoChip">PDF</div>
+    <div class="grow">
+      <div class="title">Lease agreement — 2024 renewal</div>
+      <div class="meta">
+        <span class="badge"><span class="dot" style="background:var(--cat-1)"></span>Finance</span>
+        <span>Contract</span>
+        <span>·</span>
+        <span style="font-family:var(--font-mono)">2.1 MiB</span>
+        <span>·</span>
+        <span>Mar 12, 2024</span>
+      </div>
+    </div>
+    <div class="conf">94%</div>
+  </div>
+  <div class="row hover">
+    <div class="icoChip" style="background:oklch(0.65 0.16 248 / 0.15);color:var(--ft-word)">DOC</div>
+    <div class="grow">
+      <div class="title">Q3 board memo (final v2)</div>
+      <div class="meta">
+        <span class="badge" style="color:var(--cat-11);background:oklch(0.68 0.18 280 / 0.12);border-color:oklch(0.68 0.18 280 / 0.3)"><span class="dot" style="background:var(--cat-11)"></span>Project</span>
+        <span>Memo</span>
+        <span>·</span>
+        <span style="font-family:var(--font-mono)">340 KiB</span>
+        <span>·</span>
+        <span>2 minutes ago</span>
+      </div>
+    </div>
+    <div class="actions">
+      <div class="iconbtn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 3h6v6"/><path d="m10 14 11-11"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg></div>
+      <div class="iconbtn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg></div>
+      <div class="iconbtn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></div>
+    </div>
+    <div class="conf" style="color:var(--warning)">68%</div>
+  </div>
+</body></html>

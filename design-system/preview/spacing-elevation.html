@@ -1,0 +1,16 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="_base.css"><style>
+  body { padding: 26px 24px 32px; gap: 16px; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .item { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .demo { width: 100px; height: 56px; background: var(--bg-card); border: 1px solid var(--ink-4); border-radius: var(--radius-lg); }
+  .name { font-family: var(--font-mono); font-size: 10px; color: var(--fg-tertiary); }
+  .desc { font-family: var(--font-mono); font-size: 9px; color: var(--fg-muted); text-align: center; }
+</style></head><body>
+  <div class="label">Elevation — dark mode is subtle by design</div>
+  <div class="grid">
+    <div class="item"><div class="demo" style="box-shadow:var(--shadow-xs)"></div><div class="name">xs</div><div class="desc">resting card</div></div>
+    <div class="item"><div class="demo" style="box-shadow:var(--shadow-sm)"></div><div class="name">sm</div><div class="desc">hover surface</div></div>
+    <div class="item"><div class="demo" style="box-shadow:var(--shadow-md)"></div><div class="name">md</div><div class="desc">toast</div></div>
+    <div class="item"><div class="demo" style="box-shadow:var(--shadow-lg)"></div><div class="name">lg</div><div class="desc">dropdown</div></div>
+  </div>
+</body></html>

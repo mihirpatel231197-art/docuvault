@@ -1,0 +1,35 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="_base.css"><style>
+  body { padding: 22px 24px; gap: 12px; }
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 8px;
+    font-size: 11px; font-weight: 500;
+    border-radius: var(--radius-md);
+    border: 1px solid;
+    font-family: var(--font-sans);
+  }
+  .dot { width: 6px; height: 6px; border-radius: 999px; flex-shrink: 0; }
+  .badge.cat-1 { color: var(--cat-1); background: oklch(0.70 0.15 248 / 0.12); border-color: oklch(0.70 0.15 248 / 0.3); }
+  .badge.cat-2 { color: var(--cat-2); background: oklch(0.72 0.14 165 / 0.12); border-color: oklch(0.72 0.14 165 / 0.3); }
+  .badge.cat-3 { color: var(--cat-3); background: oklch(0.74 0.15 145 / 0.12); border-color: oklch(0.74 0.15 145 / 0.3); }
+  .badge.subcat { color: var(--fg-tertiary); background: var(--ink-3); border-color: var(--ink-5); }
+  .badge.tag { color: var(--fg-secondary); background: transparent; border-color: var(--ink-5); border-style: dashed; }
+  .conf-pct { padding: 2px 7px; border-radius: var(--radius-md); font-family: var(--font-mono); font-size: 11px; font-weight: 600; font-variant-numeric: tabular-nums; }
+</style></head><body>
+  <div class="label">Badges &amp; tags</div>
+  <div class="row">
+    <span class="badge cat-1"><span class="dot" style="background:var(--cat-1)"></span>Finance</span>
+    <span class="badge cat-2"><span class="dot" style="background:var(--cat-2)"></span>Legal</span>
+    <span class="badge cat-3"><span class="dot" style="background:var(--cat-3)"></span>Tax</span>
+    <span class="badge subcat">Receipt</span>
+    <span class="badge subcat">Contract</span>
+  </div>
+  <div class="row">
+    <span class="badge tag">#2024</span>
+    <span class="badge tag">#renewal</span>
+    <span class="badge tag">#auto-renew</span>
+    <span class="conf-pct" style="color:var(--success);background:var(--success-bg)">94%</span>
+    <span class="conf-pct" style="color:var(--warning);background:var(--warning-bg)">68%</span>
+  </div>
+</body></html>

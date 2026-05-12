@@ -1,0 +1,40 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="_base.css"><style>
+  body { padding: 22px 24px; gap: 12px; }
+  .stack { display: flex; flex-direction: column; gap: 12px; }
+  .turn { display: flex; gap: 10px; }
+  .turn.user { justify-content: flex-end; }
+  .bubble {
+    max-width: 80%;
+    padding: 10px 14px;
+    border-radius: var(--radius-lg);
+    font-size: 13px; line-height: 1.5;
+  }
+  .bubble.user { background: var(--accent-700); color: oklch(0.99 0.002 264); border-bottom-right-radius: 4px; }
+  .bubble.assistant { background: var(--bg-card); border: 1px solid var(--border-default); color: var(--fg-primary); border-bottom-left-radius: 4px; }
+  .sources { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-faint); }
+  .src { display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; border-radius: var(--radius-md); background: var(--ink-3); border: 1px solid var(--ink-5); font-size: 11px; color: var(--fg-secondary); }
+  .src .swatch { width: 6px; height: 6px; border-radius: 999px; }
+  .typing { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: var(--radius-lg); background: var(--bg-card); border: 1px solid var(--border-default); font-size: 12px; color: var(--fg-tertiary); border-bottom-left-radius: 4px; }
+  .dots { display: inline-flex; gap: 3px; }
+  .dots span { width: 4px; height: 4px; border-radius: 999px; background: var(--fg-muted); }
+</style></head><body>
+  <div class="label">Chat bubbles</div>
+  <div class="stack">
+    <div class="turn user"><div class="bubble user">When does my lease expire?</div></div>
+    <div class="turn">
+      <div class="bubble assistant">
+        Your lease at <strong>~/Documents/Apartments/lease-2024-renewal.pdf</strong> expires on <strong>March 31, 2025</strong>. The auto-renew clause requires 60 days notice.
+        <div class="sources">
+          <span class="src"><span class="swatch" style="background:var(--cat-1)"></span>lease-2024-renewal.pdf</span>
+          <span class="src"><span class="swatch" style="background:var(--cat-1)"></span>lease-amendment-A.pdf</span>
+        </div>
+      </div>
+    </div>
+    <div class="turn">
+      <div class="typing">
+        <div class="dots"><span></span><span></span><span></span></div>
+        Reading your documents…
+      </div>
+    </div>
+  </div>
+</body></html>

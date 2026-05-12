@@ -1,0 +1,20 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="_base.css"><style>
+  body { padding: 22px 24px; gap: 12px; }
+  .voice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .quote { padding: 12px 14px; border-radius: var(--radius-md); font-size: 13px; }
+  .do { background: oklch(0.72 0.16 152 / 0.10); border: 1px solid oklch(0.72 0.16 152 / 0.3); color: var(--fg-primary); }
+  .dont { background: oklch(0.68 0.20 25 / 0.08); border: 1px solid oklch(0.68 0.20 25 / 0.3); color: var(--fg-secondary); text-decoration: line-through; text-decoration-color: oklch(0.68 0.20 25 / 0.6); }
+  .pill { display: inline-block; padding: 1px 6px; border-radius: var(--radius-xs); font-size: 9px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+  .pill.do { background: oklch(0.72 0.16 152 / 0.2); color: var(--success); border: none; }
+  .pill.dont { background: oklch(0.68 0.20 25 / 0.2); color: var(--danger); border: none; text-decoration: none; }
+</style></head><body>
+  <div class="label">Voice — calm system librarian, never marketing-y</div>
+  <div class="voice-grid">
+    <div class="quote do"><div class="pill do">Do</div><br/>"3 contracts expire in the next 30 days."</div>
+    <div class="quote dont"><div class="pill dont">Don't</div><br/>"Heads up — looks like some contracts might be expiring soon!"</div>
+    <div class="quote do"><div class="pill do">Do</div><br/>"Scan a folder to get started."</div>
+    <div class="quote dont"><div class="pill dont">Don't</div><br/>"Let's get you set up! 🎉"</div>
+    <div class="quote do"><div class="pill do">Do</div><br/>"No duplicates found."</div>
+    <div class="quote dont"><div class="pill dont">Don't</div><br/>"You're all caught up!"</div>
+  </div>
+</body></html>

@@ -1,0 +1,26 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="_base.css"><style>
+  body { padding: 22px 24px; gap: 0; }
+  .scale { display: flex; gap: 0; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--ink-5); box-shadow: var(--shadow-inset-top); }
+  .step { flex: 1; height: 64px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 6px; font-family: var(--font-mono); font-size: 9px; color: var(--fg-muted); }
+  .step.dark-fg { color: oklch(0.2 0.005 264); }
+  .row-bot { display: flex; justify-content: space-between; margin-top: 10px; font-family: var(--font-mono); font-size: 10px; color: var(--fg-muted); }
+</style></head><body>
+  <div class="label">Ink — neutral surface scale (12 steps)</div>
+  <div class="scale">
+    <div class="step" style="background:var(--ink-0)">0</div>
+    <div class="step" style="background:var(--ink-1)">1</div>
+    <div class="step" style="background:var(--ink-2)">2</div>
+    <div class="step" style="background:var(--ink-3)">3</div>
+    <div class="step" style="background:var(--ink-4)">4</div>
+    <div class="step" style="background:var(--ink-5)">5</div>
+    <div class="step" style="background:var(--ink-6)">6</div>
+    <div class="step" style="background:var(--ink-7)">7</div>
+    <div class="step dark-fg" style="background:var(--ink-8)">8</div>
+    <div class="step dark-fg" style="background:var(--ink-9)">9</div>
+    <div class="step dark-fg" style="background:var(--ink-10)">10</div>
+    <div class="step dark-fg" style="background:var(--ink-11)">11</div>
+  </div>
+  <div class="row-bot">
+    <span>canvas → text</span><span>4 surfaces · 4 borders · 4 text levels</span>
+  </div>
+</body></html>

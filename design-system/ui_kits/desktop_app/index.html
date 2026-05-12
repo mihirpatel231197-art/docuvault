@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>DocuVault — Desktop app</title>
+<link rel="icon" href="../../assets/glyph-docuvault.svg" />
+<link rel="stylesheet" href="../../colors_and_type.css" />
+<style>
+  html, body, #root { height: 100%; margin: 0; }
+  body { background: oklch(0.10 0.005 264); padding: 32px; display: flex; align-items: center; justify-content: center; }
+  #window {
+    width: 1280px; height: 820px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 30px 90px -20px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
+    background: var(--bg-canvas);
+  }
+  #root { height: 100%; }
+  /* Animations */
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes popIn  { from { opacity: 0; transform: translateY(-6px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes dvBlink { 0%, 80%, 100% { opacity: 0.25; } 40% { opacity: 1; } }
+  @keyframes dvProgress { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+
+  .dv-dots span { display: inline-block; width: 4px; height: 4px; border-radius: 999px; background: var(--fg-muted); margin-right: 3px; animation: dvBlink 1.4s infinite both; }
+  .dv-dots span:nth-child(2) { animation-delay: 0.16s; }
+  .dv-dots span:nth-child(3) { animation-delay: 0.32s; }
+  .dv-progress { width: 40%; animation: dvProgress 1.4s var(--ease-in-out) infinite; }
+
+  /* Custom scrollbars */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: var(--ink-4); border-radius: 999px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--ink-5); }
+  ::-webkit-scrollbar-track { background: transparent; }
+
+  button { font-family: var(--font-sans); }
+  input, textarea { font-family: var(--font-sans); }
+</style>
+</head>
+<body>
+<div id="window"><div id="root"></div></div>
+
+<!-- Lucide -->
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+<!-- React + Babel -->
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<!-- Data -->
+<script src="data.js"></script>
+
+<!-- Components -->
+<script type="text/babel" src="components/Primitives.jsx"></script>
+<script type="text/babel" src="components/CategoryBadge.jsx"></script>
+<script type="text/babel" src="components/FileTypeIcon.jsx"></script>
+<script type="text/babel" src="components/TitleBar.jsx"></script>
+<script type="text/babel" src="components/Sidebar.jsx"></script>
+<script type="text/babel" src="components/CommandPalette.jsx"></script>
+<script type="text/babel" src="components/Toast.jsx"></script>
+
+<!-- Pages -->
+<script type="text/babel" src="pages/Dashboard.jsx"></script>
+<script type="text/babel" src="pages/Chat.jsx"></script>
+<script type="text/babel" src="pages/Documents.jsx"></script>
+<script type="text/babel" src="pages/Search.jsx"></script>
+<script type="text/babel" src="pages/Duplicates.jsx"></script>
+<script type="text/babel" src="pages/Settings.jsx"></script>
+<script type="text/babel" src="pages/Upload.jsx"></script>
+
+<!-- App -->
+<script type="text/babel" src="app.jsx"></script>
+</body>
+</html>

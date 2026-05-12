@@ -1,0 +1,233 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* ── DocuVault Design System ────────────────────────────────────────────────
+   Dark-first, desktop-native. Pairs with Geist Sans (UI) and Geist Mono.
+   Derived from the official DocuVault Design System (colors_and_type.css).
+   ──────────────────────────────────────────────────────────────────────── */
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-sans);
+
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* ── DARK MODE (DEFAULT) ────────────────────────────────────────────────── */
+:root {
+  /* Ink scale — OKLCH neutrals with subtle blue undertone */
+  --ink-0:  oklch(0.145 0.005 264);   /* canvas       */
+  --ink-1:  oklch(0.175 0.005 264);   /* sidebar      */
+  --ink-2:  oklch(0.205 0.005 264);   /* card         */
+  --ink-3:  oklch(0.235 0.006 264);   /* hover        */
+  --ink-4:  oklch(0.275 0.007 264);   /* pressed      */
+  --ink-5:  oklch(0.32  0.008 264);   /* border       */
+  --ink-6:  oklch(0.42  0.008 264);   /* divider      */
+  --ink-7:  oklch(0.55  0.009 264);   /* fg-muted     */
+  --ink-8:  oklch(0.68  0.009 264);   /* fg-tertiary  */
+  --ink-9:  oklch(0.82  0.008 264);   /* fg-secondary */
+  --ink-10: oklch(0.94  0.005 264);   /* fg-primary   */
+  --ink-11: oklch(0.985 0.002 264);   /* highest      */
+
+  /* Cobalt accent */
+  --accent-500: oklch(0.62 0.19 248);
+  --accent-700: oklch(0.46 0.18 248);
+
+  /* Semantic */
+  --dv-success: oklch(0.72 0.16 152);
+  --dv-success-bg: oklch(0.30 0.08 152 / 0.18);
+  --dv-warning: oklch(0.80 0.15 78);
+  --dv-warning-bg: oklch(0.34 0.09 78 / 0.20);
+  --dv-danger: oklch(0.68 0.20 25);
+  --dv-danger-bg: oklch(0.32 0.13 25 / 0.20);
+  --dv-info: oklch(0.72 0.13 220);
+  --dv-info-bg: oklch(0.30 0.08 220 / 0.20);
+
+  /* Shadows */
+  --shadow-inset-top: inset 0 1px 0 0 rgba(255,255,255,0.04);
+  --shadow-overlay: 0 24px 64px -8px rgba(0,0,0,0.75);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-base: 160ms;
+  --dur-slow: 280ms;
+
+  /* Map to shadcn tokens */
+  --background: var(--ink-0);
+  --foreground: var(--ink-10);
+  --card: var(--ink-2);
+  --card-foreground: var(--ink-10);
+  --popover: var(--ink-2);
+  --popover-foreground: var(--ink-10);
+  --primary: var(--accent-500);
+  --primary-foreground: var(--ink-11);
+  --secondary: var(--ink-3);
+  --secondary-foreground: var(--ink-10);
+  --muted: var(--ink-3);
+  --muted-foreground: var(--ink-7);
+  --accent: var(--ink-3);
+  --accent-foreground: var(--ink-10);
+  --destructive: var(--dv-danger);
+  --border: var(--ink-4);
+  --input: var(--ink-4);
+  --ring: var(--accent-500);
+
+  --chart-1: var(--accent-500);
+  --chart-2: oklch(0.72 0.14 165);
+  --chart-3: oklch(0.80 0.14 70);
+  --chart-4: oklch(0.70 0.17 25);
+  --chart-5: oklch(0.68 0.18 305);
+
+  --radius: 10px;
+
+  --sidebar: var(--ink-1);
+  --sidebar-foreground: var(--ink-9);
+  --sidebar-primary: var(--accent-500);
+  --sidebar-primary-foreground: var(--ink-11);
+  --sidebar-accent: var(--ink-3);
+  --sidebar-accent-foreground: var(--ink-10);
+  --sidebar-border: var(--ink-3);
+  --sidebar-ring: var(--accent-500);
+}
+
+/* ── LIGHT MODE ─────────────────────────────────────────────────────────── */
+.light {
+  --ink-0:  oklch(0.99  0.002 264);
+  --ink-1:  oklch(0.975 0.003 264);
+  --ink-2:  oklch(1.00  0     264);
+  --ink-3:  oklch(0.96  0.004 264);
+  --ink-4:  oklch(0.93  0.005 264);
+  --ink-5:  oklch(0.89  0.006 264);
+  --ink-6:  oklch(0.78  0.008 264);
+  --ink-7:  oklch(0.62  0.009 264);
+  --ink-8:  oklch(0.48  0.010 264);
+  --ink-9:  oklch(0.32  0.010 264);
+  --ink-10: oklch(0.20  0.010 264);
+  --ink-11: oklch(0.12  0.008 264);
+
+  --shadow-inset-top: inset 0 1px 0 0 rgba(255,255,255,0.6);
+}
+
+/* ── FILE TYPE COLORS ───────────────────────────────────────────────────── */
+:root {
+  --ft-pdf:    oklch(0.66 0.20 25);
+  --ft-image:  oklch(0.74 0.16 0);
+  --ft-word:   oklch(0.65 0.16 248);
+  --ft-excel:  oklch(0.72 0.16 145);
+  --ft-code:   oklch(0.65 0.01 264);
+  --ft-audio:  oklch(0.68 0.18 295);
+  --ft-video:  oklch(0.74 0.16 50);
+  --ft-default:oklch(0.60 0.01 264);
+}
+
+/* ── BASE RESET ─────────────────────────────────────────────────────────── */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "ss01", "cv11";
+  }
+  html {
+    @apply font-sans;
+  }
+  code, kbd, pre, .mono {
+    font-family: var(--font-mono);
+    font-feature-settings: "zero", "ss02";
+  }
+  kbd {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 5px;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--ink-8);
+    background: var(--ink-3);
+    border: 1px solid var(--ink-5);
+    border-bottom-width: 2px;
+    border-radius: 3px;
+    font-family: var(--font-mono);
+    line-height: 1.4;
+  }
+  ::selection {
+    background: oklch(0.62 0.19 248 / 0.35);
+    color: var(--foreground);
+  }
+}
+
+/* ── UTILITY CLASSES ────────────────────────────────────────────────────── */
+.dv-card-glow {
+  box-shadow: var(--shadow-inset-top);
+}
+.dv-focus-ring:focus-visible {
+  box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--accent-500);
+  outline: none;
+}
+
+/* Typing dots animation for chat */
+@keyframes dv-dot {
+  0%, 60%, 100% { opacity: 0.25; transform: scale(0.8); }
+  30% { opacity: 1; transform: scale(1); }
+}
+.dv-dots span {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--ink-7);
+  margin-right: 3px;
+}
+.dv-dots span:nth-child(1) { animation: dv-dot 1.2s 0ms infinite; }
+.dv-dots span:nth-child(2) { animation: dv-dot 1.2s 200ms infinite; }
+.dv-dots span:nth-child(3) { animation: dv-dot 1.2s 400ms infinite; }
+
+/* Cmd+K overlay */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes popIn { from { opacity: 0; transform: scale(0.96) translateY(-8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }

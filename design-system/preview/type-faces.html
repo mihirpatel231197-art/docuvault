@@ -1,0 +1,27 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="_base.css"><style>
+  body { padding: 28px; gap: 18px; }
+  .face { display: flex; align-items: flex-end; gap: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--border-faint); }
+  .face:last-child { border: none; padding-bottom: 0; }
+  .face .glyph { font-size: 64px; line-height: 1; letter-spacing: -0.04em; color: var(--fg-primary); }
+  .face .info { display: flex; flex-direction: column; gap: 4px; padding-bottom: 6px; }
+  .face .name { font-size: 14px; font-weight: 600; }
+  .face .desc { font-size: 12px; color: var(--fg-tertiary); max-width: 380px; line-height: 1.5; }
+  .face .features { font-family: var(--font-mono); font-size: 10px; color: var(--fg-muted); margin-top: 4px; }
+</style></head><body>
+  <div class="face">
+    <div class="glyph" style="font-family:var(--font-sans);font-feature-settings:'ss01','cv11'">Aa Gg 0123</div>
+    <div class="info">
+      <div class="name">Geist Sans · UI</div>
+      <div class="desc">All interface text. Geometric grotesque with humanist details. ss01 (single-storey a) and cv11 give the slightly less corporate feel we want.</div>
+      <div class="features">300 · 400 · 500 · 600 · 700  ·  ss01, cv11</div>
+    </div>
+  </div>
+  <div class="face">
+    <div class="glyph" style="font-family:var(--font-mono);font-feature-settings:'zero','ss02'">Aa Gg 0123</div>
+    <div class="info">
+      <div class="name">Geist Mono · Code &amp; paths</div>
+      <div class="desc">File paths, hashes, IDs, JSON, kbd hints. Slashed zero on, ss02 for distinguishable l/I/1.</div>
+      <div class="features">400 · 500 · 600  ·  zero, ss02</div>
+    </div>
+  </div>
+</body></html>

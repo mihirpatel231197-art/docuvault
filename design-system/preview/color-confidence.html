@@ -1,0 +1,25 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="_base.css"><style>
+  body { padding: 22px 24px; gap: 14px; }
+  .row { display: flex; gap: 10px; align-items: center; }
+  .pct { padding: 4px 8px; border-radius: var(--radius-md); font-family: var(--font-mono); font-size: 12px; font-variant-numeric: tabular-nums; font-weight: 600; }
+  .meter { flex: 1; height: 6px; border-radius: 999px; background: var(--ink-3); overflow: hidden; }
+  .fill { height: 100%; border-radius: 999px; }
+  .name { width: 110px; font-size: 12px; color: var(--fg-secondary); }
+</style></head><body>
+  <div class="label">AI confidence — color-coded percentage</div>
+  <div class="row">
+    <div class="name">High &gt; 80%</div>
+    <div class="pct" style="color:var(--success);background:var(--success-bg)">94%</div>
+    <div class="meter"><div class="fill" style="width:94%;background:var(--success)"></div></div>
+  </div>
+  <div class="row">
+    <div class="name">Mid 50–80%</div>
+    <div class="pct" style="color:var(--warning);background:var(--warning-bg)">68%</div>
+    <div class="meter"><div class="fill" style="width:68%;background:var(--warning)"></div></div>
+  </div>
+  <div class="row">
+    <div class="name">Low &lt; 50%</div>
+    <div class="pct" style="color:var(--danger);background:var(--danger-bg)">38%</div>
+    <div class="meter"><div class="fill" style="width:38%;background:var(--danger)"></div></div>
+  </div>
+</body></html>

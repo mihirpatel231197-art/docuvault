@@ -1,0 +1,35 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="_base.css"><style>
+  body { padding: 22px 24px; gap: 14px; }
+  .card {
+    background: var(--bg-card); border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg); padding: 16px 18px;
+    box-shadow: var(--shadow-inset-top);
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .stat-label { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--fg-tertiary); letter-spacing: 0.04em; text-transform: uppercase; }
+  .stat-num { font-size: 28px; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .stat-foot { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--fg-tertiary); }
+  .delta { color: var(--success); font-family: var(--font-mono); font-size: 11px; }
+  .ico { width: 14px; height: 14px; color: var(--fg-muted); }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+</style></head><body>
+  <div class="label">Cards — stat &amp; surface</div>
+  <div class="grid">
+    <div class="card">
+      <div class="stat-label">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Total documents
+      </div>
+      <div class="stat-num">1,847</div>
+      <div class="stat-foot"><span class="delta">+ 24</span><span>since last scan</span></div>
+    </div>
+    <div class="card">
+      <div class="stat-label">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="5" rx="1"/><rect x="2" y="14" width="20" height="5" rx="1"/><path d="M6 10h.01M6 17h.01"/></svg>
+        Storage indexed
+      </div>
+      <div class="stat-num">12.3 <span style="font-size:18px;color:var(--fg-tertiary);font-weight:500">GiB</span></div>
+      <div class="stat-foot"><span style="font-family:var(--font-mono);color:var(--fg-tertiary)">across 4 watched folders</span></div>
+    </div>
+  </div>
+</body></html>

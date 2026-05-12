@@ -1,0 +1,29 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="_base.css"><style>
+  body { padding: 22px 24px; gap: 12px; }
+  .grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+  .badge {
+    display: flex; align-items: center; gap: 6px;
+    padding: 5px 9px; border-radius: var(--radius-md);
+    font-size: 11px; font-weight: 500;
+    border: 1px solid;
+  }
+  .dot { width: 6px; height: 6px; border-radius: 999px; flex-shrink: 0; }
+  .note { font-size: 11px; color: var(--fg-tertiary); margin-top: 2px; }
+</style></head><body>
+  <div class="label">Categories — 12-hue hash palette</div>
+  <div class="grid">
+    <div class="badge" style="color:var(--cat-1);background:oklch(0.70 0.15 248 / 0.12);border-color:oklch(0.70 0.15 248 / 0.3)"><div class="dot" style="background:var(--cat-1)"></div>Finance</div>
+    <div class="badge" style="color:var(--cat-2);background:oklch(0.72 0.14 165 / 0.12);border-color:oklch(0.72 0.14 165 / 0.3)"><div class="dot" style="background:var(--cat-2)"></div>Legal</div>
+    <div class="badge" style="color:var(--cat-3);background:oklch(0.74 0.15 145 / 0.12);border-color:oklch(0.74 0.15 145 / 0.3)"><div class="dot" style="background:var(--cat-3)"></div>Tax</div>
+    <div class="badge" style="color:var(--cat-4);background:oklch(0.78 0.14 90 / 0.12);border-color:oklch(0.78 0.14 90 / 0.3)"><div class="dot" style="background:var(--cat-4)"></div>Medical</div>
+    <div class="badge" style="color:var(--cat-5);background:oklch(0.80 0.14 70 / 0.12);border-color:oklch(0.80 0.14 70 / 0.3)"><div class="dot" style="background:var(--cat-5)"></div>Receipt</div>
+    <div class="badge" style="color:var(--cat-6);background:oklch(0.74 0.16 45 / 0.12);border-color:oklch(0.74 0.16 45 / 0.3)"><div class="dot" style="background:var(--cat-6)"></div>Travel</div>
+    <div class="badge" style="color:var(--cat-7);background:oklch(0.70 0.17 25 / 0.12);border-color:oklch(0.70 0.17 25 / 0.3)"><div class="dot" style="background:var(--cat-7)"></div>Utility</div>
+    <div class="badge" style="color:var(--cat-8);background:oklch(0.68 0.20 8 / 0.12);border-color:oklch(0.68 0.20 8 / 0.3)"><div class="dot" style="background:var(--cat-8)"></div>Insurance</div>
+    <div class="badge" style="color:var(--cat-9);background:oklch(0.70 0.18 340 / 0.12);border-color:oklch(0.70 0.18 340 / 0.3)"><div class="dot" style="background:var(--cat-9)"></div>Personal</div>
+    <div class="badge" style="color:var(--cat-10);background:oklch(0.68 0.18 305 / 0.12);border-color:oklch(0.68 0.18 305 / 0.3)"><div class="dot" style="background:var(--cat-10)"></div>Education</div>
+    <div class="badge" style="color:var(--cat-11);background:oklch(0.68 0.18 280 / 0.12);border-color:oklch(0.68 0.18 280 / 0.3)"><div class="dot" style="background:var(--cat-11)"></div>Project</div>
+    <div class="badge" style="color:var(--cat-12);background:oklch(0.74 0.13 215 / 0.12);border-color:oklch(0.74 0.13 215 / 0.3)"><div class="dot" style="background:var(--cat-12)"></div>Reference</div>
+  </div>
+  <div class="note">Categories are AI-determined, not hardcoded. Each name is hashed → one of 12 hues. Same name always returns the same hue.</div>
+</body></html>

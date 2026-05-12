@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "docuvault": {
+      "command": "python",
+      "args": ["-m", "app.services.mcp_server"],
+      "cwd": "/Users/mihirpatel/Dev/docuvault/backend",
+      "env": {
+        "DATABASE_URL": "postgresql://docuvault:docuvault@localhost:5433/docuvault",
+        "MEILISEARCH_URL": "http://localhost:7700",
+        "MEILISEARCH_KEY": "docuvault-master-key",
+        "MINIO_ENDPOINT": "localhost:9000",
+        "MINIO_ACCESS_KEY": "docuvault",
+        "MINIO_SECRET_KEY": "docuvault-secret"
+      }
+    }
+  }
+}

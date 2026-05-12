@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
-import { Sidebar } from "@/components/sidebar";
-import { TitleBar } from "@/components/titlebar";
+import { AppShell } from "@/components/app-shell";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,13 +34,7 @@ export default function RootLayout({
     >
       <body style={{ height: "100%", display: "flex", flexDirection: "column", background: "var(--bg-canvas)", color: "var(--fg-primary)", WebkitFontSmoothing: "antialiased" }}>
         <Providers>
-          <TitleBar />
-          <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
-            <Sidebar />
-            <main style={{ flex: 1, overflow: "hidden", display: "flex", flexDirection: "column", background: "var(--bg-canvas)" }}>
-              {children}
-            </main>
-          </div>
+          <AppShell>{children}</AppShell>
         </Providers>
       </body>
     </html>

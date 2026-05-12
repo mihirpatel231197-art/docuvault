@@ -20,7 +20,7 @@ const NAV_ITEMS = [
   { id: "upload",     label: "Upload",     Icon: UploadCloud,     href: "/upload" },
 ];
 
-export function Sidebar() {
+export function Sidebar({ onOpenPalette }: { onOpenPalette?: () => void }) {
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
@@ -76,7 +76,7 @@ export function Sidebar() {
               kbd={kbd}
               active={active}
               collapsed={collapsed}
-              onClick={() => router.push(href)}
+              onClick={id === "search" && onOpenPalette ? onOpenPalette : () => router.push(href)}
             />
           );
         })}
